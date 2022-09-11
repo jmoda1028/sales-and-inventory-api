@@ -22,15 +22,29 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
-        """Update and return user."""
-        password = validated_data.pop('password', None, required=False)
-        user = super().update(instance, validated_data)
 
-        if password:
-            user.set_password(password)
-            user.save()
+        password = validated_data.pop('password', None)
 
-        return user
+        for (key, value) in validated_data.items():
+            setattr(instance, key, value)
+
+        if password is not None:
+            instance.set_password(password)
+
+        instance.save()
+
+        return instance    
+
+    # def update(self, instance, validated_data):
+    #     """Update and return user."""
+    #     password = validated_data.pop('password')
+    #     user = super().update(instance, validated_data)
+
+    #     if password:
+    #         user.set_password(password)
+    #         user.save()
+
+    #     return user
 
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for the user auth token."""
@@ -79,9 +93,13 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class TransactionSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(many=True, required=True)
 
-    created_by = StringRelatedField()
+    # created_by = StringRelatedField()
     class Meta:
         model = Transaction
+        fields = "__all__"
+
+class Transaction_ItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction_Item
         fields = "__all__"
