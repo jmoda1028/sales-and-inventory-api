@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.core.mail import send_mail
+from django.http import JsonResponse, HttpResponse
 import random
 import string
 import datetime
+
 
 
 from .serializers import *
@@ -31,6 +33,13 @@ from rest_framework import (
     permissions
 )
 
+error404 = 404
+error500 = 500
+error400 = 400
+message404 = "Request not found!"
+message500 = "Internal Server Error!"
+message400 = "Bad Request!"
+
 # Create your views here.
 class RoleView(viewsets.ModelViewSet):
     queryset = Role.objects.all()
@@ -41,10 +50,16 @@ class UserView(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
 
-class AuthenticationView(APIView):
+class CreateTokenView(ObtainAuthToken):
+    """Create a new auth token for user"""
+    serializer_class = AuthTokenSerializer
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class CustomUserView(APIView):
 
     @api_view(['POST'])
-    def register_user(self, request):
+    def register_user(request):
         data = request.data
 
         if data['password'] != data['password_confirm']:
@@ -70,18 +85,19 @@ class AuthenticationView(APIView):
             raise exceptions.AuthenticationFailed('Invalid credentials')
 
         access_token = create_access_token(user.id)
-        refresh_token = create_refresh_token(user.id)
+        # refresh_token = create_refresh_token(user.id)
 
         UserToken.objects.create(
             user_id=user.id,
-            token=refresh_token,
+            # token=refresh_token,
             expired_at=datetime.datetime.utcnow() + datetime.timedelta(days=7)
         )
 
         response = Response()
-        response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+        # response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
         response.data = {
-            'token': access_token
+            'access_token': access_token,
+            # 'refresh_token' : refresh_token
         }
         return response
 
@@ -90,6 +106,21 @@ class AuthenticationView(APIView):
     @authentication_classes([JWTAuthentication])
     def current_user(request):
         return Response(UserSerializer(request.user).data)
+
+
+    @api_view(['GET'])
+    def user_profile(request):
+        email = request.GET.get('email', 'default')
+
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            return JsonResponse({"detail": message404}, status=error404)
+
+        res = User.objects.filter(email=email).values('id', 'first_name', 'last_name', 'password', 'email', 'role__name', 'role', 'is_active')
+                                                            
+        result = list(res)
+        return Response(result)
 
 
     @api_view(['PATCH'])
@@ -122,6 +153,7 @@ class AuthenticationView(APIView):
 
     @api_view(['POST'])
     def refresh_token(request):
+        # refresh_token = request.COOKIES.get('refresh_token')
         refresh_token = request.COOKIES.get('refresh_token')
         id = decode_refresh_token(refresh_token)
 
@@ -135,7 +167,7 @@ class AuthenticationView(APIView):
         access_token = create_access_token(id)
 
         return Response({
-            'token': access_token
+            'refresh_token': access_token
         })
 
 
@@ -163,7 +195,7 @@ class AuthenticationView(APIView):
             token=token
         )
 
-        url = 'http://localhost:3000/reset/' + token
+        url = 'http://localhost:3000/reset-password/' + token
 
         send_mail(
             subject='Reset your password!',
@@ -262,8 +294,11 @@ class ProductView(viewsets.ModelViewSet):
     # authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
 
-    def perform_create(self,serializer):
-		    serializer.save(created_by=self.request.user)
+    # def perform_create(self,serializer):
+		  #   serializer.save(created_by=self.request.user)
+
+    # def perform_create(self,serializer):
+    #     serializer.save(created_by=self.request.user)
 
 class TransactionView(viewsets.ModelViewSet):
     queryset = Transaction.objects.all().order_by('-created_at')
@@ -287,10 +322,109 @@ class Transaction_ItemView(viewsets.ModelViewSet):
 class CustomView(APIView):
 
     @api_view(['GET'])
-    def get_product_category(request):
+    def get_products_category_supplier(request):
         # category = request.GET.get('category', 'default')
 
         # res = Product.objects.filter(category=category).order_by('-created_at').values('id','category','category__name','product_code','name','qty_on_hand','price','image')
-        res = Product.objects.order_by('-created_at').values('id','category__name','product_code','name','qty_on_hand','price','description')
+        res = Product.objects.order_by('-created_at').values(
+                        'id','product_code','name','category__name','supplier__company_name','qty_on_hand','price','description','date_stock_in','created_by','created_at','updated_at'
+                    )
         data = list(res)
         return Response(data)
+
+    @api_view(['GET'])
+    def get_product_detail(request):
+        # product_id = request.GET.get('id')
+        # product_id = Product.objects.get(pk=pk)
+        product_id = request.GET.get('product_id', 'default')
+
+        try:
+            Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return JsonResponse({"detail": message404}, status=error404)
+       
+        res = Product.objects.order_by('-created_at').filter(id=product_id).values(
+                        'id','product_code','name','category__name','supplier__company_name','qty_on_hand','price','description','date_stock_in','created_by__first_name','created_by__last_name','created_at','updated_at', 'image'
+                    )
+        result = list(res)
+        return Response(result)   
+
+
+    @api_view(['GET'])
+    def get_users_role(request):
+        res = User.objects.order_by('-created_at').filter(role=1).values(
+               'id','first_name','last_name','email','role__name','created_at','updated_at', 'is_active')
+        data = list(res)
+        return Response(data)
+
+    @api_view(['PATCH'])
+    def update_users(request, pk):
+        user_id = User.objects.get(pk=pk)
+
+        serializer = UserSerializer(user_id, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @api_view(['GET'])
+    def get_transaction_customer(request):
+
+        res = Transaction.objects.order_by('-created_at').values('id','transaction_code','customer__first_name','customer__last_name','items_quantity','tax','total_price','created_at')
+        result = list(res)
+        return Response(result)
+
+    @api_view(['GET'])
+    def get_transaction_item_detail(request):
+        transaction_id = request.GET.get('transaction_id', 'default')
+
+        try:
+            Transaction_Item.objects.get(id=transaction_id)
+        except Transaction_Item.DoesNotExist:
+            return JsonResponse({"detail": message404}, status=error404)
+       
+        res = Transaction_Item.objects.order_by('-id').filter(id=transaction_id).values('id','transaction__transaction_code','product__product_code','product__name','price','quantity')
+        result = list(res)
+        return Response(result)
+
+    @api_view(['GET'])
+    def get_current_user(request):
+        user_id = request.GET.get('user_id', 'default')
+
+        try:
+            User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return JsonResponse({"detail": message404}, status=error404)
+
+        res = User.objects.filter(id=user_id).values('id', 'first_name', 'last_name', 'email', 'role__name', 'is_active')
+                                                            
+        result = list(res)
+        return Response(result)
+
+    @api_view(['GET'])
+    def count_customers(request):
+        res = Customer.objects.all().count()
+        return Response({'count': res})   
+
+    @api_view(['GET'])
+    def total_users(request):
+        role = request.GET.get('role', 'default')
+        count = len(set(User.objects.filter(role=role)))
+        data = {"total_users": count}
+        return Response(data)
+
+    @api_view(['GET'])
+    def count_products(request):
+        res = Product.objects.all().count()
+        return Response({'count': res})
+
+    @api_view(['GET'])
+    def count_suppliers(request):
+        res = Supplier.objects.all().count()
+        return Response({'count': res})
+
+    @api_view(['GET'])
+    def count_transactions(request):
+        res = Transaction.objects.all().count()
+        return Response({'count': res})      
+
+

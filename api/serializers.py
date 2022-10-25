@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user object."""
     class Meta:
         model = User
-        fields = ['id','first_name', 'last_name', 'email', 'password', 'role']
+        fields = ['id','first_name', 'last_name', 'email', 'password', 'role', 'is_active']
         extra_kwargs = {'password': {'write_only': True, 'min_length': 8}}
 
     def create(self, validated_data):
@@ -87,7 +87,7 @@ class SupplierSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
 
-    created_by = StringRelatedField()
+    # created_by = StringRelatedField()
     class Meta:
         model = Product
         fields = "__all__"

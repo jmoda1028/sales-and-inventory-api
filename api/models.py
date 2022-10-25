@@ -5,7 +5,7 @@ from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
-    UserManager
+    
 )
 
 # Create your models here.
@@ -20,27 +20,27 @@ class Role(models.Model):
         return self.name
 
 
-# class UserManager(BaseUserManager):
-#     """Manager for users."""
+class UserManager(BaseUserManager):
+    """Manager for users."""
 
-#     def create_user(self, email, password=None, **extra_fields):
-#         """Create, save and return a new user."""
-#         if not email:
-#             raise ValueError('User must have an email address.')
-#         user = self.model(email=self.normalize_email(email), **extra_fields)
-#         user.set_password(password)
-#         user.save(using=self._db)
+    def create_user(self, email, password=None, **extra_fields):
+        """Create, save and return a new user."""
+        if not email:
+            raise ValueError('User must have an email address.')
+        user = self.model(email=self.normalize_email(email), **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
 
-#         return user
+        return user
 
-#     def create_superuser(self, email, password):
-#         """Create and return a new superuser."""
-#         user = self.create_user(email, password)
-#         user.is_staff = True
-#         user.is_superuser = True
-#         user.save(using=self._db)
+    def create_superuser(self, email, password):
+        """Create and return a new superuser."""
+        user = self.create_user(email, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
 
-#         return user
+        return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -117,7 +117,8 @@ class Product(models.Model):
     price= models.DecimalField(max_digits=6, decimal_places=2)
     image = models.ImageField(upload_to='product_images', blank=True, null=True)
     date_stock_in = models.DateField(auto_now=False, auto_now_add=False)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    # created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -127,7 +128,7 @@ class Product(models.Model):
 
 class Transaction(models.Model):
     transaction_code = models.IntegerField(unique=True, null=True)
-    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, null=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     items_quantity = models.IntegerField(default=0)
     tax = models.DecimalField(max_digits=100, decimal_places=2, default=Decimal('0.00'),  null=True)
     # created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
