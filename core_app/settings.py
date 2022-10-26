@@ -30,7 +30,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['sales-and-inventory-api-app.herokuapp.com']    
+ALLOWED_HOSTS = ["sales-and-inventory-api-app.herokuapp.com"]    
 
 
 # Application definition
