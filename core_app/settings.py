@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-import django_heroku
+# import django_heroku
 
 from pathlib import Path
 
@@ -28,10 +28,7 @@ SECRET_KEY = 'django-insecure-rm5zd%r^jt-*wu(vuko2a4-+5iq0oiatfz2v0mtkh1_mae@epv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-
-ALLOWED_HOSTS = ["sales-and-inventory-api-app.herokuapp.com"]    
-
+ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -165,17 +162,17 @@ TIME_ZONE = 'Asia/Manila'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-# STATIC_URL = 'static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
-# MEDIA_URL = 'media/' # 'http://myhost:port/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+MEDIA_URL = 'media/' # 'http://myhost:port/media/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_URL = '/static/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media')
 # MEDIA_URL = 'media/'
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 
 # Default primary key field type
@@ -211,4 +208,4 @@ CORS_ALLOW_CREDENTIALS = True
 EMAIL_HOST = '0.0.0.0'
 EMAIL_PORT = 1025
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
