@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['127.0.0.1','localhost','sales-and-inventory-app.herokuapp.com']
 
 # Application definition
 
@@ -211,4 +211,4 @@ CORS_ALLOW_CREDENTIALS = True
 EMAIL_HOST = '0.0.0.0'
 EMAIL_PORT = 1025
 
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
