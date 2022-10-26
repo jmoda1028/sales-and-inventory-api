@@ -173,6 +173,8 @@ TIME_ZONE = 'Asia/Manila'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media')
+MEDIA_URL = 'media/'
 django_heroku.settings(locals())
 
 
