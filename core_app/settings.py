@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-# import django_heroku
+import django_heroku
 
 from pathlib import Path
 
@@ -23,12 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-rm5zd%r^jt-*wu(vuko2a4-+5iq0oiatfz2v0mtkh1_mae@epv'
+# SECRET_KEY = 'django-insecure-rm5zd%r^jt-*wu(vuko2a4-+5iq0oiatfz2v0mtkh1_mae@epv'
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -70,6 +72,7 @@ SPECTACULAR_SETTINGS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',  # new
     'django.middleware.common.CommonMiddleware',  # new
@@ -172,7 +175,7 @@ MEDIA_URL = 'media/' # 'http://myhost:port/media/'
 # STATIC_URL = '/static/'
 # MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media')
 # MEDIA_URL = 'media/'
-# django_heroku.settings(locals())
+django_heroku.settings(locals())
 
 
 # Default primary key field type
