@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
+import django_heroku
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,7 +28,9 @@ SECRET_KEY = 'django-insecure-rm5zd%r^jt-*wu(vuko2a4-+5iq0oiatfz2v0mtkh1_mae@epv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['sales-and-inventory-api-app.herokuapp.com']    
 
 
 # Application definition
@@ -102,14 +106,25 @@ WSGI_APPLICATION = 'core_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'inventorydb',
+#         'USER': 'inventorydb',
+#         'PASSWORD': '!nvent0ry',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'inventorydb',
-        'USER': 'inventorydb',
-        'PASSWORD': '!nvent0ry',
-        'HOST': 'localhost',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'd8l3tmolmg6f21',
+        'USER': 'iilnvtjrcbydxs',
+        'PASSWORD': '35867f0ae6f0392ae6710efd61ebe9ba55ea73bcd684926ec512c92acefe9a68',
+        'HOST': 'ec2-3-213-66-35.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -150,11 +165,15 @@ TIME_ZONE = 'Asia/Manila'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_URL = 'static/'
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
-MEDIA_URL = 'media/' # 'http://myhost:port/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+# MEDIA_URL = 'media/' # 'http://myhost:port/media/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+django_heroku.settings(locals())
 
 
 # Default primary key field type
