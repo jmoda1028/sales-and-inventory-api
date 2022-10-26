@@ -210,5 +210,3 @@ CORS_ALLOW_CREDENTIALS = True
 
 EMAIL_HOST = '0.0.0.0'
 EMAIL_PORT = 1025
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
