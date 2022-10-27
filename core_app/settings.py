@@ -35,7 +35,7 @@ if(len(sys.argv) >= 2 and sys.argv[1] == 'runserver'):
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','sales-and-inventory-api.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','sales-and-inventory-api.herokuapp.com','0.0.0.0']
 
 # Application definition
 
