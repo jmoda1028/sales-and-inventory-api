@@ -213,7 +213,15 @@ CORS_ALLOW_CREDENTIALS = True
 #     'x-requested-with',
 # )
 
-EMAIL_HOST = '0.0.0.0'
-EMAIL_PORT = 1025
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'jun.moda93@gmail.com'
+EMAIL_HOST_PASSWORD = 'Haffsah@1028!'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# EMAIL_HOST = '0.0.0.0'
+# EMAIL_PORT = 1025
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

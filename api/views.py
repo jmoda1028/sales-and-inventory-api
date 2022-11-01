@@ -200,8 +200,9 @@ class CustomUserView(APIView):
         send_mail(
             subject='Reset your password!',
             message='Click <a href="%s">here</a> to reset your password!' % url,
-            from_email='from@example.com',
-            recipient_list=[email]
+            from_email='sales_inventory@gmail.com',
+            recipient_list=[email],
+            fail_silently=False
         )
 
         return Response({
