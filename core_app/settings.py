@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 import sys
-import django_heroku
+import dj_database_url
 
 from pathlib import Path
 
@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-rm5zd%r^jt-*wu(vuko2a4-+5iq0oiatfz2v0mtkh1_mae@epv'
+SECRET_KEY = 'django-insecure-rm5zd%r^jt-*wu(vuko2a4-+5iq0oiatfz2v0mtkh1_mae@epv'
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -111,27 +111,29 @@ WSGI_APPLICATION = 'core_app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'inventorydb',
-#         'USER': 'inventorydb',
-#         'PASSWORD': '!nvent0ry',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'ddnumin0f6ve4t',
-        'USER': 'xqcijdtgkapaym',
-        'PASSWORD': '4ae51976a9525ec6b7af33fe81f1614d315ba7d227aba671daca5a4a887ed918',
-        'HOST': 'ec2-3-213-66-35.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'rZcHExTYlmzoepHcqBmQ',
+        'HOST': 'containers-us-west-41.railway.app',
+        'PORT': '6437',
     }
 }
+
+DATABASES['default'] = dj_database_url.config()
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'ddnumin0f6ve4t',
+#         'USER': 'xqcijdtgkapaym',
+#         'PASSWORD': '4ae51976a9525ec6b7af33fe81f1614d315ba7d227aba671daca5a4a887ed918',
+#         'HOST': 'ec2-3-213-66-35.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -180,7 +182,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'staticfiles/media')
 MEDIA_URL = 'media/'
-django_heroku.settings(locals())
+# django_heroku.settings(locals())
 
 
 # Default primary key field type
